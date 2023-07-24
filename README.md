@@ -1,59 +1,69 @@
-## Explanation of the Code
+# Email Auto-Responder - Readme
 
-The provided code is a Node.js application that sets up an autoresponder for Gmail. Let's go through the code and understand its functionality:
+## Introduction
+This project is a Node.js application that automates the process of replying to unread emails in your Gmail account. It utilizes the Gmail API from Google and runs as a server with the help of Express.js. The application uses OAuth2 for authentication to access your Gmail account securely. The server is set up to listen to incoming requests and respond with appropriate actions.
 
-1. The required libraries, including `express`, `googleapis`, `node-cron`, and `dotenv`, are imported.
+## Prerequisites
+Before using this application, you need to have the following:
 
-2. An instance of the Express application is created, and the necessary middleware is set up to handle JSON and URL-encoded data.
+1. Node.js installed on your machine.
+2. A Gmail account (sender account) from which you want to automate email replies.
+3. A Google Cloud Platform (GCP) project with Gmail API enabled, and API credentials generated. You will need the Client ID, Client Secret, and Redirect URI from the GCP project.
 
-3. An OAuth2 client is created using the Google API credentials from the environment variables.
+## Setup
 
-4. The root route ("/") is defined to redirect the user to the Google authentication URL.
+1. Clone the repository to your local machine:
+   ```
+   git clone https://github.com/singh1203/Gmail_Autoresponse.git
+   ```
 
-5. The OAuth2 callback route ("/oauth2callback") is defined to handle the authorization code obtained from the Google authentication process. It exchanges the authorization code for an access token and sets up the cron job to start retrieving and replying to emails.
+2. Navigate to the project directory:
+   ```
+   cd Gmail_Autoresponse
+   ```
 
-6. The `startCronJob` function is responsible for scheduling the cron job. It uses the `node-cron` library to run the `retrieveAndReplyToEmails` function at a specified interval (default: every 45 seconds).
+3. Install the required dependencies:
+   ```
+   npm install
+   ```
 
-7. The `retrieveAndReplyToEmails` function retrieves the list of unread emails from the user's Gmail account. It iterates through each email, checks if there are any prior replies from the user, and if not, sends a reply email using the `sendReply` function. It also adds a label to the email and moves it to the labeled category using the `addLabelAndMoveEmail` function.
+4. Create a `.env` file in the root directory of the project and add the following information:
+   ```
+   CLIENT_ID=<your-gcp-client-id>
+   CLIENT_SECRET=<your-gcp-client-secret>
+   REDIRECT_URI=<your-redirect-uri>
+   PORT=<port-number>
+   ```
 
-8. The `checkPriorReplies` function checks if there are any prior replies by the user in a given email thread. It fetches the list of emails in the thread and checks if any of them have the "SENT" label, indicating a prior reply.
+5. Replace `<your-gcp-client-id>`, `<your-gcp-client-secret>`, and `<your-redirect-uri>` with the credentials from your GCP project. Set `<port-number>` to the port on which you want the server to run (default is 3000).
 
-9. The `sendReply` function composes and sends a reply email to the sender of the given email. It retrieves the sender's email address from the email headers and creates a predefined reply message. The reply email is sent using the Gmail API.
+## Usage
 
-10. The `addLabelAndMoveEmail` function adds a label to the email and moves it to the specified category. It fetches the label ID for the given label name and modifies the email to add the label and remove it from the "INBOX" category.
+1. After setting up the application, run the server using the following command:
+   ```
+   npm start
+   ```
 
-11. The utility function `createRawEmail` converts an email object to RFC 2822 format. It constructs the email headers and body in the required format.
+2. Access the server in your web browser or use a tool like Postman to initiate the authentication process. This will redirect you to a Google login page, where you need to provide access to your Gmail account.
 
-12. The server is started and listens on the specified port (default: 3000).
+3. Once the authentication is successful, the server will start a cron job that runs every 45 seconds by default (you can modify the cron schedule if needed). The cron job will fetch new unread emails, check if they have prior replies by you, and send a reply if needed.
 
-## Libraries and Technologies Used
+## How It Works
 
-The code utilizes the following libraries and technologies:
+The application works by setting up a cron job that runs at specified intervals (every 45 seconds by default). The cron job fetches a list of unread emails from your Gmail account using the Gmail API. For each unread email, it checks if there are any prior replies by you in the email thread. If there are no prior replies, it sends a pre-defined reply and adds a label to the email thread to categorize it as "To be reviewed."
 
-- **Express**: A popular Node.js framework used to build web applications. It simplifies the process of creating web servers and handling HTTP requests and responses.
+The server uses OAuth2 for authentication, ensuring secure access to your Gmail account without exposing your credentials directly.
 
-- **googleapis**: A client library for accessing various Google APIs, including the Gmail API. It provides a convenient way to interact with the Gmail API using Node.js.
+Please note that the application will only send automated replies to emails for which you haven't replied before, to avoid sending duplicate responses to the same email thread.
 
-- **node-cron**: A task scheduler library for Node.js that allows scheduling functions to run at specified intervals or cron-like patterns. It is used to schedule the periodic checks for new emails in this application.
+## Customization
 
-- **dotenv**: A module used to load environment variables from a `.env` file into the application's `process.env`. It helps keep sensitive information like API credentials outside of the code repository.
+You can customize the reply message and the label name by modifying the `sendReply()` and `addLabelAndMoveEmail()` functions in the code.
 
-- **OAuth 2.0**: An authorization framework used by Google APIs to authenticate and authorize access to user data. It enables the application to obtain an access token to interact with the Gmail API on behalf of the user.
+## Conclusion
 
-- **RFC 2822**: A standard format for representing email messages. The `createRawEmail` function converts an email object to this format before sending it using the Gmail API.
+This project demonstrates how to automate email replies using the Gmail API and Node.js. It can be useful for scenarios where you want to acknowledge receipt of emails or inform senders about your absence. Feel free to extend and modify the code to suit your specific use case.
 
-## Areas for Improvement
+If you encounter any issues or have suggestions for improvements, please feel free to contribute or reach out for support.
 
-Here are some areas where the code can be improved:
-
-1. **Error Handling**: The code should implement proper error handling and provide meaningful error messages or log detailed error information. Currently, errors are logged to the console, but a more robust error handling mechanism can be implemented.
-
-2. **Code Modularity**: The code can be further modularized by separating the functions into separate files and organizing them based on their responsibilities. This would improve code readability and maintainability.
-
-3. **Configuration Options**: It would be useful to provide configuration options for the cron job schedule, autoresponder message, email label, and other parameters. This would allow users to easily customize the behavior of the autoresponder.
-
-4. **UI or Configuration Interface**: Providing a user interface or configuration interface can simplify the setup process and allow users to configure the autoresponder without modifying the code directly.
-
-These improvements can enhance the functionality, maintainability, and user experience of this autoresponder application.
-
-## Thank You
+Happy automating!
