@@ -1,4 +1,4 @@
-# Email Auto-Responder - Readme
+# Email Auto-Responder 
 
 ## Introduction
 This project is a Node.js application that automates the process of replying to unread emails in your Gmail account. It utilizes the Gmail API from Google and runs as a server with the help of Express.js. The application uses OAuth2 for authentication to access your Gmail account securely. The server is set up to listen to incoming requests and respond with appropriate actions.
